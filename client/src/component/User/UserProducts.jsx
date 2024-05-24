@@ -13,16 +13,17 @@ function UserProducts(){
         })
     },[])
 
-    const handleCart = ((productId)=>{
+    const handleCart = (productId)=>{
         axios.post(`/api/add-to-cart/${productId}`)
         .then((result)=>{
-            toast("product added to cart");
+            toast.success("product added to cart");
         })
         .catch((error)=>{
             toast.error("error addding product")
             console.log(error);
         })
-    })
+    }
+    
     
 
     return(
@@ -36,7 +37,7 @@ function UserProducts(){
                         <h5 className="card-title">{product.itemName}</h5>
                         <p className="card-text">{product.itemDesc}</p>
                         <p className="card-text">{product.itemPrice}</p>
-                        <button className="btn btn-warning" onClick={()=>{handleCart(product._id)}}>Add to cart</button>
+                        <button className="btn btn-warning" onClick={()=>{handleCart(product._id)}} >Add to cart</button>
                     </div>
                 </div>
             ))}

@@ -141,20 +141,20 @@ router.post('/add-to-cart/:id',(req,res)=>{
 router.get('/cart',(req,res)=>{
     const userId = req.session.userId;
 
-    cartModel.findOne({user:userId}
+    cartModel.findOne({user:userId})
         .lean()
         .populate("products")
         .then(cart=>{
             if(!cart){
                 res.json("empty cart")
             }else{
-                const productIds = cart.map(product=>product._id);
+                const productIds = cart.products.map(product=>product._id);
 
                 ProductModel.aggregate([
                     {$match:{_id:{$in:productIds}}},
                     {
                         $addFields: {
-                            cartItemId: { $arrayElemAt: ['$product._id',0]}
+                            cartItemId: `$_id`
                         }
                     }
                 ])
@@ -170,7 +170,6 @@ router.get('/cart',(req,res)=>{
         .catch((error)=>{
             console.log("error fetching cart");
         })
-    )
 })
 
 export default router;

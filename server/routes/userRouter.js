@@ -30,10 +30,10 @@ router.post("/login", (req, res) => {
                 req.session.isAdmin = user.admin;
                 res.json({Login: true});
             } else {
-                res.json("password incorrect");
+                res.json("incorrect password");
             }
         } else {
-            res.json("no email found");
+            res.json("invalid email");
         }
     })
     .catch((error) => {

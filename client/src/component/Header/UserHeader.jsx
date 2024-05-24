@@ -9,7 +9,8 @@ function UserHeader(props) {
         axios.get('/api/logout')
             .then((result)=>{
                 if(result.data === "logoutsuccess"){
-                    navigate('/register')
+                    navigate('/login')
+                    toast("Logout successfully")
                 }
                 
             })
