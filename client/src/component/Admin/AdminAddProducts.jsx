@@ -7,14 +7,20 @@ function AdminAddProducts() {
     const [itemDesc, setItemDesc] = useState("")
     const [itemPrice, setItemPrice] = useState("")
     const [itemImage, setItemImage] = useState(null);
+    const [itemCategory,setItemCategory] = useState("")
+    const [discountPrice,setDiscountPrice] = useState("")
+    const [itemWeight,setItemWeight] = useState("")
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('itemName', itemName);
+        formData.append('itemWeight',itemWeight);
         formData.append('itemDesc', itemDesc);
         formData.append('itemPrice', itemPrice);
         formData.append('itemImage', itemImage);
+        formData.append('itemCategory',itemCategory);
+        formData.append('discountPrice',discountPrice)
     
         axios.post("/api/admin/products", formData, {
             headers: {
@@ -27,6 +33,7 @@ function AdminAddProducts() {
             setItemDesc("")
             setItemPrice("")
             setItemImage(null);
+            setDiscountPrice("")
             document.getElementById("formFile").value = "";
         })
         .catch((error) => {
@@ -49,6 +56,30 @@ function AdminAddProducts() {
                         placeholder="Enter item name" 
                         onChange={(e) => setItemName(e.target.value)} />
                 </div>
+
+                <div className="form-group mt-4">
+                    <label>Item Category</label>
+                    <select className="form-select" aria-label="Default select example" name="itemCategory" onChange={(e) => setItemCategory(e.target.value)} >
+                        <option>Select Category....</option>
+                        <option>Fresh Fruits</option>
+                        <option>Dry Fruits</option>
+                        <option>Vegetables</option>
+                        <option>Gifts</option>
+                        <option>Deal of the Day</option>
+                    </select>
+                </div>
+
+                <div className="form-group mt-4">
+                    <label>Item Weight</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        name="itemWeight"
+                        value={itemWeight}
+                        placeholder="Enter item Weight" 
+                        onChange={(e) => setItemWeight(e.target.value)} />
+                </div>
+
                 <div className="form-group mt-4">
                     <label>Item Description</label>
                     <input 
@@ -59,8 +90,9 @@ function AdminAddProducts() {
                         placeholder="Enter item description" 
                         onChange={(e) => setItemDesc(e.target.value)} />
                 </div>
+
                 <div className="form-group mt-4">
-                    <label>Price</label>
+                    <label>Actual Price</label>
                     <input 
                         type="number" 
                         className="form-control" 
@@ -69,6 +101,18 @@ function AdminAddProducts() {
                         placeholder="Enter price"
                         onChange={(e) => setItemPrice(e.target.value)} />
                 </div>
+
+                <div className="form-group mt-4">
+                    <label>Discount Price</label>
+                    <input 
+                        type="number" 
+                        className="form-control" 
+                        name="discountPrice"
+                        value={discountPrice}
+                        placeholder="Enter price"
+                        onChange={(e) => setDiscountPrice(e.target.value)} />
+                </div>
+
                 <div className="mb-3  mt-4">
                     <label className="form-label">Default file input example</label>
                     <input 
@@ -78,6 +122,7 @@ function AdminAddProducts() {
                         onChange={(e) => setItemImage(e.target.files[0])}
                         id="formFile" />
                 </div>
+
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
         </div>

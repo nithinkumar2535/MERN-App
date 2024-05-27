@@ -8,6 +8,12 @@ import Footer from './component/Footer';
 import Login from './component/Login';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserHeader from './component/Header/UserHeader';
+import UserProducts from './component/User/UserProducts';
+import Carousel from './component/Carousel';
+import Categories from './component/Categories';
+import DealOfTheDay from './component/DealOfTheDay';
+
 
 function App() {
   const [name, setName] = useState("");
@@ -48,7 +54,14 @@ function App() {
           }>
           </Route>
       ) : (
-        <Route path='/' element={<Login />} />
+        <Route path='/' element={
+          <div>
+            <UserHeader/>
+            <Carousel/>
+            <UserProducts/>
+            <Footer/>
+          </div>
+        } />
       )}
     </Routes>
     </>

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-function UserProducts(){
+function UserProducts(props){
 
     const [product,setProduct] = useState([]);
 
@@ -27,17 +27,27 @@ function UserProducts(){
     
 
     return(
-            <div className="container">
-            <h1>Products</h1>
-            <div className="row m-4">
+            <div className="container-fluid bg-dark-subtle">
+            <div className="row ms-5">
             { product.map((product,index)=>(
-                <div key={index} className="card m-4" style={{ width: '18rem' }}>
-                    <img src={`http://localhost:3000/images/product-images/${product._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{maxWidth:"200px",height:"200px",objectFit:"cover"}}/>
+                <div key={index} className="card ms-5 my-3" style={{ width: '18rem',height:"25rem"}}>
+                    <div className="mt-2 d-flex justify-content-center align-items-center" style={{width:"260px",height:"200px"}}>
+                        <img src={`http://localhost:3000/images/product-images/${product._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{width:"190px",height:"190px", objectFit:"cover"}} />
+                    </div>
+                    
                     <div  className="card-body">
-                        <h5 className="card-title">{product.itemName}</h5>
-                        <p className="card-text">{product.itemDesc}</p>
-                        <p className="card-text">{product.itemPrice}</p>
-                        <button className="btn btn-warning" onClick={()=>{handleCart(product._id)}} >Add to cart</button>
+                        <div className="d-flex">
+                        <h5 className="card-title ">{product.itemName}</h5>
+                        <p className="card-text text-primary">({product.itemWeight})</p>
+                        </div>
+                        <p className="card-text text-black-50">{product.itemDesc}</p>
+                        <div className="d-flex">
+                            <p className="card-text bg-primary-subtle me-5 fs-5 p-1">Rs.{product.itemPrice}</p> 
+                            <del className="card-text disabled ms-5 fs-5 p-1 text-dark-emphasis">MRP.{product.itemPrice}</del> 
+                        </div>
+                        <div className="d-flex align-items-center justify-content-center">
+                            <button className="btn btn-primary btn-lg" onClick={()=>{handleCart(product._id)}} >Add to cart</button>
+                        </div>   
                     </div>
                 </div>
             ))}

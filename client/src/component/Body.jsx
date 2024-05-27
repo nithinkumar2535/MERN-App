@@ -8,11 +8,12 @@ import { Route } from "react-router-dom";
 import AdminSettings from "./Admin/AdminSettings";
 import AdminAddProducts from "./Admin/AdminAddProducts";
 import AdminEditProducts from "./Admin/AdminEditProducts";
+import Carousel from "./Carousel";
 
 function Body(props) {
 
     return (
-        <div className="container">
+        <div className="container-fluid">
             {props.isAdmin ? (<Routes>
                 <Route path='/' element={<AdminProducts />} />
                 <Route path='/orders' element={<AdminOrders />} />
@@ -20,7 +21,12 @@ function Body(props) {
                 <Route path='/addproducts' element={<AdminAddProducts />} />
                 <Route path='/editproducts/:id' element={<AdminEditProducts />} />
             </Routes>):(<Routes>
-                <Route path='/' element={<UserProducts />} />
+                <Route path='/' element={
+                <div>
+                    <Carousel/>
+                    <UserProducts />
+                </div>
+                } />
                 <Route path='/cart' element={<UserCart />} />
                 <Route path='/orders' element={<UserOrder />} />
             </Routes>)}

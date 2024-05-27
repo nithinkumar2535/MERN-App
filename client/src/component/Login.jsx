@@ -32,11 +32,11 @@ function SignUp() {
             .then((result)=>{
                 if(result.data.Login){
                     navigate('/')
-                    toast("Login successful")
+                    toast.success("Login successful")
                 }else if(result.data === "incorrect password"){
-                    toast("Invalid password")
+                    toast.error("Invalid password")
                 }else{
-                    toast("Invalid email")
+                    toast.error("Invalid email")
                 }
 
             })
