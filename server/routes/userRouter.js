@@ -13,7 +13,10 @@ router.get('/', (req,res)=>{
 router.post('/register', (req,res)=>{
     UserModel.create(req.body)
         .then((user)=>{ res.json(user)})
-        .catch((error)=>{res.json(error)})
+        .catch((error)=>{
+            res.json(error);
+            console.log("email exist");
+        })
 })
 
 router.post("/login", (req, res) => {

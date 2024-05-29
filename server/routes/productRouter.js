@@ -6,6 +6,8 @@ import cartModel from '../models/cartModel.js';
 import UserModel from '../models/userModel.js';
 import session from 'express-session';
 
+
+
 router.post('/admin/products', (req, res)=>{
     const product = new ProductModel(req.body);
     product.save().then((product)=>{  
@@ -119,23 +121,45 @@ router.get('/products',(req,res)=>{
 
 router.post('/add-to-cart/:id',(req,res)=>{
     const userId = req.session.userId;
-    const productId = req.params.id;
+    if(userId){
+        const productId = req.params.id;
 
-    const updateOperation ={
-        $addToSet: {products:productId}
-    } ;
-
-    cartModel.findOneAndUpdate(
-        {user:userId},
-        updateOperation,
-        {upsert:true,new:true}
-    )
-    .then((result)=>{
-        console.log("successfully added to cart");
-    })
-    .catch((error)=>{
-        console.log("error adding product");
-    })
+        cartModel.findOne({user:userId,products:productId})
+        .then((cart)=>{
+            if(cart){
+                res.status(200).json({message:"already in cart"})
+            }else{
+                const updateOperation ={
+                    $addToSet: {products:productId}
+                } ;
+            
+                cartModel.findOneAndUpdate(
+                    {user:userId},
+                    updateOperation,
+                    {upsert:true,new:true}
+                )
+                .then((result)=>{
+                    res.status(200).json({message:"success"})
+                    
+                })
+                .catch((error)=>{
+                    res.status(500).json({message:"error"})
+                    console.log("error adding product");
+                })
+            }
+            
+        })
+        .catch((error) => {
+            console.log("Error finding cart:", error);
+            res.status(500).json({ message: "error" });
+        });
+    
+       
+    }else{
+        res.status(404).json({ message: "User not found" });
+        console.log("user not found");
+    }
+   
 })
 
 router.get('/cart',(req,res)=>{
@@ -146,7 +170,8 @@ router.get('/cart',(req,res)=>{
         .populate("products")
         .then(cart=>{
             if(!cart){
-                res.json("empty cart")
+                res.status(200).json({message:"empty cart"})
+                console.log("cart is empty");
             }else{
                 const productIds = cart.products.map(product=>product._id);
 
@@ -171,5 +196,37 @@ router.get('/cart',(req,res)=>{
             console.log("error fetching cart");
         })
 })
+
+router.get('/cart-item-count', async (req, res) => {
+    const userId = req.session.userId;
+
+    if(userId){
+        cartModel.findOne({user:userId})
+        .then((cart)=>{
+            if(cart){
+                const itemCount = cart.products.length;
+                res.status(200).json({itemCount})
+            }else{
+                res.status(200).json({itemCount:0})
+            }
+        })
+        .catch((error)=>{
+            console.log("error fetching cart items count",error);
+            res.status(500).json({error:"internal server error"})
+        })
+    }else{
+        res.status(404).json({error:"user not found"})
+    }
+   
+});
+
+router.delete('/cart/:id', (req, res) => {
+
+    const productId = req.params.id;
+
+
+    
+    
+});
 
 export default router;

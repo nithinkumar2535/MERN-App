@@ -48,7 +48,7 @@ function SignUp() {
 
     return (
         <div>
-            <section className="vh-100" style={{ backgroundColor: "#9A616D" }}>
+            <section className="vh-100 bg-primary-subtle">
                 <div className="container py-5 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col col-xl-10">
@@ -85,6 +85,7 @@ function SignUp() {
                                                 <a className="small text-muted" href="#!">Forgot password?</a>
                                                 <p className="mb-5 pb-lg-2" style={{ color: "#393f81" }}>Don't have an account? <Link to="/register" style={{ color: "#393f81" }}>Register here</Link></p>
                                             </form>
+                                            <p> <Link to={'/'}>Back to Home</Link></p>
 
                                         </div>
                                     </div>

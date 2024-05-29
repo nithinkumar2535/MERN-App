@@ -6,7 +6,7 @@ import Header from './component/Header';
 import Body from './component/Body';
 import Footer from './component/Footer';
 import Login from './component/Login';
-import { ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserHeader from './component/Header/UserHeader';
 import UserProducts from './component/User/UserProducts';
@@ -40,11 +40,12 @@ function App() {
 
   return (
     <>
-    <ToastContainer/>
-    <Routes>
-      <Route path='/register' element={<SignUp />} />
-      <Route path='/login' element={<Login />} />
+      <ToastContainer />
+
       {isLoggedIn ? (
+        <Routes>
+          <Route path='/register' element={<SignUp />} />
+          <Route path='/login' element={<Login />} />
           <Route path='/*' element={
             <div>
               <Header name={name} isAdmin={isAdmin} isLoggedIn={isLoggedIn} />
@@ -53,17 +54,23 @@ function App() {
             </div>
           }>
           </Route>
+        </Routes>
       ) : (
-        <Route path='/' element={
-          <div>
-            <UserHeader/>
-            <Carousel/>
-            <UserProducts/>
-            <Footer/>
-          </div>
-        } />
+        <Routes>
+          <Route path='/register' element={<SignUp />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/cart' element={<Login />} />
+          <Route path='/' element={
+            <div>
+              <UserHeader />
+              <Carousel />
+              <UserProducts />
+              <Footer />
+            </div>
+          } />
+        </Routes>
       )}
-    </Routes>
+
     </>
   );
 }

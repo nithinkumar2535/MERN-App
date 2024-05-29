@@ -1,10 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function UserProducts(props){
 
     const [product,setProduct] = useState([]);
+
+    const navigate = useNavigate()
 
     useEffect(()=>{
         axios.get('/api/products')
@@ -15,12 +18,20 @@ function UserProducts(props){
 
     const handleCart = (productId)=>{
         axios.post(`/api/add-to-cart/${productId}`)
-        .then((result)=>{
-            toast.success("product added to cart");
+        .then((response)=>{
+            if(response.status === 200 && response.data.message === "success"){
+                toast.success("Product added to cart")
+                navigate('/')
+            }else if(response.status === 200 && response.data.message === "already in cart"){
+                toast.warning("Product already in cart")
+            }else{
+                console.log(error);
+                toast.error("Error")
+            }
+            
         })
         .catch((error)=>{
-            toast.error("error addding product")
-            console.log(error);
+            navigate('/login')
         })
     }
     
@@ -42,7 +53,7 @@ function UserProducts(props){
                         </div>
                         <p className="card-text text-black-50">{product.itemDesc}</p>
                         <div className="d-flex">
-                            <p className="card-text bg-primary-subtle me-5 fs-5 p-1">Rs.{product.itemPrice}</p> 
+                            <p className="card-text bg-primary-subtle me-5 fs-5 p-1">Rs.{product.discountPrice}</p> 
                             <del className="card-text disabled ms-5 fs-5 p-1 text-dark-emphasis">MRP.{product.itemPrice}</del> 
                         </div>
                         <div className="d-flex align-items-center justify-content-center">

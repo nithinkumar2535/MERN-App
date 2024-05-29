@@ -26,9 +26,13 @@ function SignUp() {
         };
     
         axios.post("/api/register", userData)
-            .then((result) => {
+            .then((response) => {
+                if(response.data.user){
                 toast("Registered successfully")
                 navigate('/login');
+                }else{
+                    toast.warning("Email address already exists")
+                }
             })
             .catch((error) => {
                 toast("something went wrong")
@@ -88,11 +92,16 @@ function SignUp() {
                                                 </label>
                                             </div>
 
-                                            <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                            <div className="d-flex justify-content-start mb-3 mb-lg-4">
                                                 <button type="submit" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-lg">Register</button>
                                             </div>
 
+                                            <div>
+                                                <p>Already have an account ?  <Link to={'/login'}>Login</Link></p>
+                                            </div>
+
                                         </form>
+                                       
 
                                     </div>
                                     <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
