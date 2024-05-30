@@ -27,6 +27,7 @@ function AdminProducts() {
     return (
         <div className="container">
             <h2>Products</h2>
+            <Link to="/addproducts" className="btn btn-success">Add Product</Link>
             <table className="table">
                 <thead>
                     <tr>
@@ -60,7 +61,7 @@ function AdminProducts() {
                     )}
                 </tbody>
             </table>
-            <Link to="/addproducts" className="btn btn-success">Add Product</Link>
+           
         </div>
     );
 }

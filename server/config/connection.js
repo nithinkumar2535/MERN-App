@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-mongoose.connect("mongodb://localhost:27017/react")
+mongoose.connect("mongodb+srv://dbuser:dbuserpassword@cluster0.biz6pqe.mongodb.net/Reactapp")
     .then((result)=>{
-        console.log("connected to server")
+        console.log("connected server")
     })
     .catch((err)=>{
         console.log(err)

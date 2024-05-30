@@ -9,21 +9,25 @@ export const UserContext = createContext()
 
 function UserHeader(props) {
 
-    const [itemCount,setItemCount] = useState("");
+    const [itemCount,setItemCount] = useState();
+
+    function fetchCartData(){
+        axios.get('/api/cart')
+        .then((response)=>{
+            setItemCount(response.data.products.length)
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
 
 
 
     useEffect(()=>{
-        axios.get('/api/cart-item-count')
-        .then((response)=>{
-            if(response.status === 200){
-                setItemCount(response.data.itemCount)
-            }
-        })
-        .catch((err)=>{
-            
-        })
-    })
+       fetchCartData();
+       const intervalId = setInterval(fetchCartData,300);
+       return()=>clearInterval(intervalId)
+    },[])
 
     const navigate = useNavigate();
 
@@ -80,7 +84,7 @@ function UserHeader(props) {
                                     </div>
                                     <div className="ms-3 mt-2 position-relative">
                                         <Link to={"/cart"} className="text-light"><span><i className="bi bi-cart2"></i></span></Link>
-                                        <div className="bg-danger text-light d-flex  justify-content-center position-absolute rounded-circle" style={{ width: "20px", height: "20px", fontSize: "14px", bottom: "20px", left: "20px" }}>    
+                                        <div className="bg-warning text-dark d-flex  justify-content-center position-absolute rounded-circle" style={{ width: "20px", height: "20px", fontSize: "14px", bottom: "20px", left: "20px" }}>    
                                                 <p>{itemCount}</p>    
                                         </div>
                                     </div>

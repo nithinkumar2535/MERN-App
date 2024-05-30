@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function AdminAddProducts() {
 
@@ -34,7 +35,10 @@ function AdminAddProducts() {
             setItemPrice("")
             setItemImage(null);
             setDiscountPrice("")
+            setItemWeight("")
+            setItemCategory("")
             document.getElementById("formFile").value = "";
+            toast.success("Product added successfully")
         })
         .catch((error) => {
             console.log(error);
@@ -42,7 +46,7 @@ function AdminAddProducts() {
     }
 
     return (
-        <div className="col-6 mt-4">
+        <div className="col-6 mt-4 container">
 
             <h2>Add Product</h2>
             <form onSubmit={handleSubmit}>
@@ -123,7 +127,7 @@ function AdminAddProducts() {
                         id="formFile" />
                 </div>
 
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" className="btn btn-primary mb-3">Submit</button>
             </form>
         </div>
 

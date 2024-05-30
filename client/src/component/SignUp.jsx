@@ -27,11 +27,11 @@ function SignUp() {
     
         axios.post("/api/register", userData)
             .then((response) => {
-                if(response.data.user){
-                toast("Registered successfully")
-                navigate('/login');
+                if(response.status ===200 && response.data.message === "Success"){
+                    toast.success("Registerd successfully");
+                    navigate('/login')
                 }else{
-                    toast.warning("Email address already exists")
+                    toast.warning("email already exist")
                 }
             })
             .catch((error) => {

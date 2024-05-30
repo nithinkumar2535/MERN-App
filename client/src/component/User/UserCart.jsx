@@ -5,47 +5,47 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { AiOutlineMinus } from "react-icons/ai";
 import { UserContext } from "../Header/UserHeader";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function UserCart(){
 
     const [product,setProduct] = useState([]);
-    const [itemCount,setItemCount] = useState("");
+    const [itemCount,setItemCount] = useState();
 
     const navigate = useNavigate();
 
     useEffect(()=>{
         axios.get('/api/cart')
         .then((response)=>{
-          if(response.status === 200 && response.data.message === "empty cart"){
-            toast.warning("Your cart is empty")
-            navigate('/')
-          }else{
-            setProduct(response.data)
-          }
+         const products = response.data.products.map(product=>({...product,quantity:1}));
+         setProduct(products)
+         setItemCount(response.data.products.length)
            
+        })
+        .catch((err)=>{
+          console.log(err);
         })
     },[])
 
-    axios.get('/api/cart-item-count')
-        .then((response)=>{
-            if(response.status === 200){
-                setItemCount(response.data.itemCount)
-            }
-        })
-        .catch((err)=>{
-            
-        })
+    const handleQuantityChange = (index,newQuantity)=>{
+      const updateProducts = [...product];
+      updateProducts[index].quantity = newQuantity;
+      setProduct(updateProducts)
+    }
+    
 
     const handleDelete = (itemId) => {
-      axios.delete(`/api/cart/${itemId}`)
+      axios.delete(`/api/delete-cart-item/${itemId}`)
           .then((response) => {
-              // Filter out the deleted item from the data array
-              const newData = data.filter(item => item._id !== itemId);
+              const newData = product.filter(item => item._id !== itemId);
               setProduct(newData);
               toast("Item removed from cart")
           })
           .catch((error) => { console.error(error); toast.error("error") });
   };
+  const calculateToatlPrice = ()=>{
+    return product.reduce((total,product)=>total + (product.discountPrice * product.quantity),0)
+  }
 
     
     
@@ -63,7 +63,7 @@ function UserCart(){
                       <div className="p-5">
                         <div className="d-flex justify-content-between align-items-center mb-5">
                           <h1 className="fw-bold mb-0 text-black">Shopping Cart</h1>
-                          <h6 className="mb-0 ">{itemCount} items</h6>
+                          <h6 className="mb-0 "> {itemCount}items</h6>
                         </div>
                         <hr className="my-4" />
                         {product.map((product, index) => (
@@ -83,21 +83,21 @@ function UserCart(){
                           </div>
 
                           <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
-                            <button className="btn btn-link btn-sm" onClick={() => document.getElementById(`form${index}`).stepDown()}>
+                            <button className="btn btn-link btn-sm" onClick={()=>handleQuantityChange(index,Math.max(product.quantity-1,1))}>
                               <i className="bi bi-dash"></i>
                             </button>
 
-                            <input type="number" id={`form${index}`} defaultValue="1"  className="text-end" style={{maxWidth:"40px"}}/>
+                            <input readOnly type="number" value={product.quantity} onChange={(e) => handleQuantityChange(index, e.target.value)} className="text-end" style={{maxWidth:"40px"}}/>
 
-                            <button className="btn btn-link btn-sm" onClick={() => document.getElementById(`form${index}`).stepUp()}>
+                            <button className="btn btn-link btn-sm" onClick={()=>handleQuantityChange(index,product.quantity+1)}>
                             <i className="bi bi-plus"></i>
                             </button>
                           </div>
                           <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                            <h6 className="mb-0"><i class="bi bi-currency-rupee"></i>{product.itemPrice}</h6>
+                            <h6 className="mb-0"><i className="bi bi-currency-rupee"></i>{product.discountPrice * product.quantity}</h6>
                           </div>
                           <div className="col-md-1 col-lg-1 col-xl-1 text-end">
-                            <button className="btn btn-danger" onClick={handleDelete}>Remove</button>
+                            <button className="btn btn-danger" onClick={()=>handleDelete(product._id)}>Remove</button>
                           </div>
                           <hr className="my-4" />
                         </div>
@@ -106,7 +106,7 @@ function UserCart(){
 
                         
                         <div className="pt-5">
-                          <h6 className="mb-0"><a href="#!" className="text-body"><i className="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                          <h6 className="mb-0"><Link to={'/'} className="text-body"><i className="fas fa-long-arrow-alt-left me-2"></i>Back to shop</Link></h6>
                         </div>
                       </div>
                     </div>
@@ -116,21 +116,11 @@ function UserCart(){
                         <hr className="my-4" />
 
                         <div className="d-flex justify-content-between mb-4">
-                          <h5 className="text-uppercase">items {itemCount}</h5>
-                          <h5>€ 132.00</h5>
+                          <h5 className="text-uppercase">{itemCount}items</h5>
+                          <h5><i className="bi bi-currency-rupee"></i> {calculateToatlPrice()}</h5>
                         </div>
 
-                        <h5 className="text-uppercase mb-3">Shipping</h5>
-
-                        <div className="mb-4 pb-2">
-                          <select>
-                            <option value="1">Standard-Delivery- €5.00</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                            <option value="4">Four</option>
-                          </select>
-                        </div>
-
+            
                         <h5 className="text-uppercase mb-3">Give code</h5>
 
                         <div className="mb-5">
@@ -144,10 +134,10 @@ function UserCart(){
 
                         <div className="d-flex justify-content-between mb-5">
                           <h5 className="text-uppercase">Total price</h5>
-                          <h5>€ 137.00</h5>
+                          <h5><i className="bi bi-currency-rupee"></i> {calculateToatlPrice()}</h5>
                         </div>
 
-                        <button type="button" className="btn btn-dark btn-block btn-lg">Register</button>
+                        <button type="button" className="btn btn-primary btn-block btn-lg">Buy now</button>
                       </div>
                     </div>
                   </div>

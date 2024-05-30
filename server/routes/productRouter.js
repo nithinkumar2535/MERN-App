@@ -170,8 +170,7 @@ router.get('/cart',(req,res)=>{
         .populate("products")
         .then(cart=>{
             if(!cart){
-                res.status(200).json({message:"empty cart"})
-                console.log("cart is empty");
+                res.status(200).json({products:[]})
             }else{
                 const productIds = cart.products.map(product=>product._id);
 
@@ -184,7 +183,7 @@ router.get('/cart',(req,res)=>{
                     }
                 ])
                 .then((products)=>{
-                    res.json(products)
+                    res.json({products})
                 })
                 .catch((error)=>{
                     res.json(error)
@@ -197,32 +196,30 @@ router.get('/cart',(req,res)=>{
         })
 })
 
-router.get('/cart-item-count', async (req, res) => {
-    const userId = req.session.userId;
 
-    if(userId){
-        cartModel.findOne({user:userId})
-        .then((cart)=>{
-            if(cart){
-                const itemCount = cart.products.length;
-                res.status(200).json({itemCount})
-            }else{
-                res.status(200).json({itemCount:0})
-            }
-        })
-        .catch((error)=>{
-            console.log("error fetching cart items count",error);
-            res.status(500).json({error:"internal server error"})
-        })
-    }else{
-        res.status(404).json({error:"user not found"})
-    }
-   
-});
 
-router.delete('/cart/:id', (req, res) => {
+router.delete('/delete-cart-item/:id', (req, res) => {
 
+    const userId =req.session.userId;
     const productId = req.params.id;
+
+    cartModel.findOneAndUpdate(
+        {user:userId},
+        {$pull:{products:productId}},
+        {new: true}
+    )
+    .then(updatedCart=>{
+        if(!updatedCart){
+            return res.status(404).json({message:"Cart not found"});
+
+        }
+        res.status(200).json({message:"Product removed from cart",cart:updatedCart})
+    })
+    .catch(error=>{
+        console.log("error removing product from cart",error);
+        res.status(500).json({message:"internal server error"})
+    })
+    
 
 
     
