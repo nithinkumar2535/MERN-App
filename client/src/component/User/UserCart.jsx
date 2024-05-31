@@ -3,49 +3,95 @@ import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import { AiOutlineMinus } from "react-icons/ai";
-import { UserContext } from "../Header/UserHeader";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 function UserCart(){
 
-    const [product,setProduct] = useState([]);
-    const [itemCount,setItemCount] = useState();
+    const [data,setData] = useState([]);
+    const [totalPrice,setTotalPrice] = useState(0)
 
     const navigate = useNavigate();
+
+    const calculateTotalPrice = (products)=>{
+      return products.reduce((acc,item)=>acc + (item.discountPrice * item.quantity),0)
+    }
 
     useEffect(()=>{
         axios.get('/api/cart')
         .then((response)=>{
-         const products = response.data.products.map(product=>({...product,quantity:1}));
-         setProduct(products)
-         setItemCount(response.data.products.length)
-           
+         const products = response.data.products
+         setData(products)
+         
+       // Calculate the total price based on the products with their quantities
+        const total = calculateTotalPrice(products);
+        setTotalPrice(total);
         })
         .catch((err)=>{
-          console.log(err);
+          console.log("error fetching cart data",err);
         })
     },[])
 
-    const handleQuantityChange = (index,newQuantity)=>{
-      const updateProducts = [...product];
-      updateProducts[index].quantity = newQuantity;
-      setProduct(updateProducts)
-    }
+    
     
 
     const handleDelete = (itemId) => {
-      axios.delete(`/api/delete-cart-item/${itemId}`)
+      axios.delete(`/api/deletefromcart/${itemId}`)
           .then((response) => {
-              const newData = product.filter(item => item._id !== itemId);
-              setProduct(newData);
+              const newData = data.filter(item => item._id !== itemId);
+              setData(newData);
               toast("Item removed from cart")
+              const total = calculateTotalPrice(newData);
+                setTotalPrice(total);
           })
-          .catch((error) => { console.error(error); toast.error("error") });
+          .catch((error) => { console.error("error deleting from cart"); toast.error("error") });
   };
-  const calculateToatlPrice = ()=>{
-    return product.reduce((total,product)=>total + (product.discountPrice * product.quantity),0)
-  }
+
+  const handleIncrement = (itemId) => {
+    axios.put(`/api/cart/increment/${itemId}`)
+        .then((response) => {
+            if (response.data.success) {
+                const newData = data.map(item => {
+                    if (item._id === itemId) {
+                        return { ...item, quantity: item.quantity + 1 };
+                    }
+                    return item;
+                });
+                setData(newData);
+                const total = calculateTotalPrice(newData);
+                setTotalPrice(total);
+            } else {
+                console.error("Failed to increment item quantity");
+            }
+        })
+        .catch((error) => {
+            console.error("Error incrementing item quantity:", error);
+        });
+};
+
+
+const handleDecrement = (itemId) => {
+    axios.put(`/api/cart/decrement/${itemId}`)
+        .then((response) => {
+            if (response.data.success) {
+                const newData = data.map(item => {
+                    if (item._id === itemId && item.quantity > 1) {
+                        return { ...item, quantity: item.quantity - 1 };
+                    }
+                    return item;
+                });
+                setData(newData);
+                const total = calculateTotalPrice(newData);
+                setTotalPrice(total);
+            } else {
+                console.error("Failed to decrement item quantity");
+            }
+        })
+        .catch((error) => {
+            console.error("Error decrementing item quantity:", error);
+        });
+};
+  
 
     
     
@@ -63,46 +109,53 @@ function UserCart(){
                       <div className="p-5">
                         <div className="d-flex justify-content-between align-items-center mb-5">
                           <h1 className="fw-bold mb-0 text-black">Shopping Cart</h1>
-                          <h6 className="mb-0 "> {itemCount}items</h6>
+                          <h6 className="mb-0 "> items</h6>
                         </div>
                         <hr className="my-4" />
-                        {product.map((product, index) => (
-                        <div key={index} className="row mb-1 d-flex justify-content-between align-items-center">
-
-                          <div className="col-md-2 col-lg-2 col-xl-2">
-                            <img src={`http://localhost:3000/images/product-images/${product._id}.jpg?timestamp=${new Date().getTime()}`} className="img-fluid rounded-3" alt="Cotton T-shirt" 
-                            style={{ maxWidth: "100px", height: "80px", objectFit: "cover" }}/>
+                        {data.length > 0 ? (
+                              data.map((item, index) => (
+                                <div key={item._id} className="row mb-1 d-flex justify-content-between align-items-center">
+        
+                                  <div className="col-md-2 col-lg-2 col-xl-2">
+                                    <img src={`http://localhost:3000/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="img-fluid rounded-3" alt="Cotton T-shirt" 
+                                    style={{ maxWidth: "100px", height: "80px", objectFit: "cover" }}/>
+                                  </div>
+        
+                                  <div className="col-md-3 col-lg-3 col-xl-3">
+                                    <div className="d-flex">
+                                    <h6 className="text-muted me-1">{item.itemName} </h6>
+                                    <h6 className="text-muted">({item.itemWeight}) </h6>
+                                    </div>
+                                    <h6 className="text-black mb-0">{item.itemDesc}</h6>
+                                  </div>
+        
+                                  <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                    <button className="btn btn-link btn-sm" onClick={()=> handleDecrement(item._id)}>
+                                      <i className="bi bi-dash"></i>
+                                    </button>
+        
+                                    <input readOnly type="number" value={item.quantity}  className="text-end" style={{maxWidth:"40px"}}/>
+        
+                                    <button className="btn btn-link btn-sm" onClick={()=> handleIncrement(item._id)}>
+                                    <i className="bi bi-plus"></i>
+                                    </button>
+                                  </div>
+                                  <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                    <h6 className="mb-0"><i className="bi bi-currency-rupee"></i>{item.discountPrice}</h6>
+                                  </div>
+                                  <div className="col-md-1 col-lg-1 col-xl-1 text-end">
+                                    <button className="btn btn-danger" onClick={()=>handleDelete(item._id)}>Remove</button>
+                                  </div>
+                                  <hr className="my-4" />
+                                </div>
+                                
+                                ))
+                        ) : (
+                          <div>
+                            <h5>No item in cart</h5>
                           </div>
-
-                          <div className="col-md-3 col-lg-3 col-xl-3">
-                            <div className="d-flex">
-                            <h6 className="text-muted me-1">{product.itemName} </h6>
-                            <h6 className="text-muted">({product.itemWeight}) </h6>
-                            </div>
-                            <h6 className="text-black mb-0">{product.itemDesc}</h6>
-                          </div>
-
-                          <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
-                            <button className="btn btn-link btn-sm" onClick={()=>handleQuantityChange(index,Math.max(product.quantity-1,1))}>
-                              <i className="bi bi-dash"></i>
-                            </button>
-
-                            <input readOnly type="number" value={product.quantity} onChange={(e) => handleQuantityChange(index, e.target.value)} className="text-end" style={{maxWidth:"40px"}}/>
-
-                            <button className="btn btn-link btn-sm" onClick={()=>handleQuantityChange(index,product.quantity+1)}>
-                            <i className="bi bi-plus"></i>
-                            </button>
-                          </div>
-                          <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                            <h6 className="mb-0"><i className="bi bi-currency-rupee"></i>{product.discountPrice * product.quantity}</h6>
-                          </div>
-                          <div className="col-md-1 col-lg-1 col-xl-1 text-end">
-                            <button className="btn btn-danger" onClick={()=>handleDelete(product._id)}>Remove</button>
-                          </div>
-                          <hr className="my-4" />
-                        </div>
+                        )}
                         
-                        ))}
 
                         
                         <div className="pt-5">
@@ -116,8 +169,8 @@ function UserCart(){
                         <hr className="my-4" />
 
                         <div className="d-flex justify-content-between mb-4">
-                          <h5 className="text-uppercase">{itemCount}items</h5>
-                          <h5><i className="bi bi-currency-rupee"></i> {calculateToatlPrice()}</h5>
+                          <h5 className="text-uppercase">items</h5>
+                          <h5><i className="bi bi-currency-rupee"></i> {totalPrice.toFixed(2)}</h5>
                         </div>
 
             
@@ -134,7 +187,7 @@ function UserCart(){
 
                         <div className="d-flex justify-content-between mb-5">
                           <h5 className="text-uppercase">Total price</h5>
-                          <h5><i className="bi bi-currency-rupee"></i> {calculateToatlPrice()}</h5>
+                          <h5><i className="bi bi-currency-rupee"></i> {totalPrice.toFixed(2)}</h5>
                         </div>
 
                         <button type="button" className="btn btn-primary btn-block btn-lg">Buy now</button>

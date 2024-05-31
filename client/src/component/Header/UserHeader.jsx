@@ -4,20 +4,24 @@ import { createContext, useEffect, useState } from "react";
 import UserCart from "../User/UserCart";
 import { toast } from "react-toastify";
 
-export const UserContext = createContext()
-
 
 function UserHeader(props) {
 
-    const [itemCount,setItemCount] = useState();
+    const [data,setData] = useState([])
+    const [cartQty,setCartQty] = useState();
 
     function fetchCartData(){
         axios.get('/api/cart')
         .then((response)=>{
-            setItemCount(response.data.products.length)
+            const products = response.data.products;
+            setData(products)
+
+           // Calculate the total quantity of products in the cart
+           const totalQuantity = products.reduce((total, product) => total + product.quantity, 0);
+           setCartQty(totalQuantity);
         })
         .catch((error)=>{
-            console.log(error);
+            console.log("Error fethcing cart data",error);
         })
     }
 
@@ -85,7 +89,7 @@ function UserHeader(props) {
                                     <div className="ms-3 mt-2 position-relative">
                                         <Link to={"/cart"} className="text-light"><span><i className="bi bi-cart2"></i></span></Link>
                                         <div className="bg-warning text-dark d-flex  justify-content-center position-absolute rounded-circle" style={{ width: "20px", height: "20px", fontSize: "14px", bottom: "20px", left: "20px" }}>    
-                                                <p>{itemCount}</p>    
+                                                <p>{cartQty}</p>    
                                         </div>
                                     </div>
                                     <div className="ms-4 mt-1">

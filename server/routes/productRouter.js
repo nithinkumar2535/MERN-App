@@ -124,34 +124,42 @@ router.post('/add-to-cart/:id',(req,res)=>{
     if(userId){
         const productId = req.params.id;
 
-        cartModel.findOne({user:userId,products:productId})
-        .then((cart)=>{
-            if(cart){
-                res.status(200).json({message:"already in cart"})
+        cartModel.findOne({user:userId})
+        .then(cart=>{
+            if(!cart){
+                const newCart = new cartModel({
+                    user : userId,
+                    products : [{product: productId,quantity: 1}]
+                });
+                return newCart.save()
+                  
             }else{
-                const updateOperation ={
-                    $addToSet: {products:productId}
-                } ;
+               // check if the product already in the cart
+               const productIndex = cart.products.findIndex(p=>p.product.toString()=== productId);
+
+               if(productIndex > -1) {
+                //if product exists, increment the quantity
+                cart.products[productIndex].quantity += 1;
+
+               } else{
+                // if product does not exist, add it to the cart
+                cart.products.push({product:productId,quantity: 1})
+                res.status(200).json({message:"success"})
+               }
             
-                cartModel.findOneAndUpdate(
-                    {user:userId},
-                    updateOperation,
-                    {upsert:true,new:true}
-                )
-                .then((result)=>{
-                    res.status(200).json({message:"success"})
-                    
-                })
-                .catch((error)=>{
-                    res.status(500).json({message:"error"})
-                    console.log("error adding product");
-                })
+            return cart.save()
             }
-            
+           
         })
+        .then(updatedCart =>{
+            // calculate the toatal items
+            const totalItems = updatedCart.products.reduce((total,item)=>total + item.quantity,0);
+            res.json({cartItems: totalItems})
+        })
+        
         .catch((error) => {
-            console.log("Error finding cart:", error);
-            res.status(500).json({ message: "error" });
+            console.log("Error adding product to cart:", error);
+            res.status(500).json({ message: "internal server error" });
         });
     
        
@@ -167,63 +175,149 @@ router.get('/cart',(req,res)=>{
 
     cartModel.findOne({user:userId})
         .lean()
-        .populate("products")
+        .populate('products.product')
         .then(cart=>{
             if(!cart){
                 res.status(200).json({products:[]})
             }else{
-                const productIds = cart.products.map(product=>product._id);
-
-                ProductModel.aggregate([
-                    {$match:{_id:{$in:productIds}}},
-                    {
-                        $addFields: {
-                            cartItemId: `$_id`
-                        }
-                    }
-                ])
-                .then((products)=>{
-                    res.json({products})
-                })
-                .catch((error)=>{
-                    res.json(error)
-                    console.log("error agregating product");
-                })
+               //extract products from the cart
+               const populatedProducts = cart.products.map(item=>{
+                const product = item.product;
+                return {
+                    ...product,
+                    quantity: item.quantity //include the qunatity from the cart
+                }
+               });
+               // return the products with populated quantity
+               res.json({products:populatedProducts});
             }
         })
         .catch((error)=>{
-            console.log("error fetching cart");
+            console.log("error fetching cart",error);
+            res.status(500).json("internal server error")
         })
 })
 
 
 
-router.delete('/delete-cart-item/:id', (req, res) => {
 
-    const userId =req.session.userId;
-    const productId = req.params.id;
 
+// Decrement item quantity
+router.put('/cart/decrement/:id', (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.session;
+
+    cartModel.findOne({ user: userId })
+        .then(cart => {
+            if (!cart) {
+                return res.status(404).json({ success: false, message: 'Cart not found' });
+            }
+
+            const productIndex = cart.products.findIndex(item => item.product.toString() === id);
+
+            if (productIndex === -1) {
+                return res.status(404).json({ success: false, message: 'Product not found in cart' });
+            }
+
+            if (cart.products[productIndex].quantity > 1) {
+                cart.products[productIndex].quantity -= 1;
+            }
+
+            return cart.save();
+        })
+        .then(() => {
+            res.json({ success: true }); // Send response only after saving the cart
+        })
+        .catch(error => {
+            console.error("Error decrementing product quantity:", error);
+            res.status(500).json({ success: false, error: error.message });
+        });
+});
+
+// Increment item quantity
+router.put('/cart/increment/:id', (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.session;
+
+    cartModel.findOne({ user: userId })
+        .then(cart => {
+            if (!cart) {
+                return res.status(404).json({ success: false, message: 'Cart not found' });
+            }
+
+            const productIndex = cart.products.findIndex(item => item.product.toString() === id);
+
+            if (productIndex === -1) {
+                return res.status(404).json({ success: false, message: 'Product not found in cart' });
+            }
+
+            cart.products[productIndex].quantity += 1;
+
+            return cart.save();
+        })
+        .then(() => {
+            res.json({ success: true }); // Send response only after saving the cart
+        })
+        .catch(error => {
+            console.error("Error incrementing product quantity:", error);
+            res.status(500).json({ success: false, error: error.message });
+        });
+});
+
+// Decrement item quantity
+router.put('/cart/decrement/:id', (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.session;
+
+    CartModel.findOne({ user: userId })
+        .then(cart => {
+            if (!cart) {
+                return res.status(404).json({ success: false, message: 'Cart not found' });
+            }
+
+            const productIndex = cart.products.findIndex(item => item.product.toString() === id);
+
+            if (productIndex === -1) {
+                return res.status(404).json({ success: false, message: 'Product not found in cart' });
+            }
+
+            if (cart.products[productIndex].quantity > 1) {
+                cart.products[productIndex].quantity -= 1;
+            }
+
+            return cart.save();
+        })
+        .then(() => {
+            res.json({ success: true }); // Send response only after saving the cart
+        })
+        .catch(error => {
+            console.error("Error decrementing product quantity:", error);
+            res.status(500).json({ success: false, error: error.message });
+        });
+});
+
+// Delete item from cart
+router.delete('/deletefromcart/:id', (req, res) => {
+    console.log("Triggered deletefromcart route");
+    const { id } = req.params;
+    const { userId } = req.session;
+    console.log("userId:", userId);
+    console.log("productId:", id); 
+    // Find the cart document for the user in the database and pull the product ID from the products array
     cartModel.findOneAndUpdate(
-        {user:userId},
-        {$pull:{products:productId}},
-        {new: true}
+        { user: userId },
+        { $pull: { products: { product: id } } },
+        { new: true } // Return the updated cart document after the update
     )
-    .then(updatedCart=>{
-        if(!updatedCart){
-            return res.status(404).json({message:"Cart not found"});
-
-        }
-        res.status(200).json({message:"Product removed from cart",cart:updatedCart})
+    .lean() 
+    .then(updatedCart => {
+        const cart = updatedCart;
+        res.json(cart);
     })
-    .catch(error=>{
-        console.log("error removing product from cart",error);
-        res.status(500).json({message:"internal server error"})
-    })
-    
-
-
-    
-    
+    .catch(error => {
+        console.error("Error removing product from cart:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    });
 });
 
 export default router;
