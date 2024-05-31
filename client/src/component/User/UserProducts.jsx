@@ -21,7 +21,7 @@ function UserProducts(props){
     },[])
 
     const handleCart = (itemId)=>{
-        axios.post(`/api/add-to-cart/${itemId}`)
+        axios.get(`/api/getcart/${itemId}`)
         .then((response)=>{
             setCartQty(response.data.cartItems);
             toast.success("product added to cart")
@@ -62,13 +62,7 @@ function UserProducts(props){
             ):(
                 <div className="col-md-2 mb-3">
                 <div className="card">
-                        <img src="http://surl.li/tzmuv" />
-                        <div className="card-body">
-                            <h5 className="card-title"></h5>
-                            <p className="card-text" style={{ minHeight: "50px" }}></p>
-                            <p className="card-text">Price: ₹ </p>
-                            <button onClick={() => handleCart(item._id)} className="btn btn-outline-danger">+ Cart</button>
-                        </div>
+                        <h1>Product is Empty</h1>
                     </div>
             </div>
             )}

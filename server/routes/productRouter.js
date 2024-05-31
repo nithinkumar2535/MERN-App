@@ -119,56 +119,44 @@ router.get('/products',(req,res)=>{
     })
 })
 
-router.post('/add-to-cart/:id',(req,res)=>{
+router.get('/getcart/:id', (req, res) => {
     const userId = req.session.userId;
-    if(userId){
-        const productId = req.params.id;
+    const productId = req.params.id;
 
-        cartModel.findOne({user:userId})
-        .then(cart=>{
-            if(!cart){
+    // Find the user's cart
+    cartModel.findOne({ user: userId })
+        .then(cart => {
+            if (!cart) {
+                // If no cart exists, create a new one
                 const newCart = new cartModel({
-                    user : userId,
-                    products : [{product: productId,quantity: 1}]
+                    user: userId,
+                    products: [{ product: productId, quantity: 1 }]
                 });
-                return newCart.save()
-                  
-            }else{
-               // check if the product already in the cart
-               const productIndex = cart.products.findIndex(p=>p.product.toString()=== productId);
+                return newCart.save();
+            } else {
+                // Check if the product is already in the cart
+                const productIndex = cart.products.findIndex(p => p.product.toString() === productId);
 
-               if(productIndex > -1) {
-                //if product exists, increment the quantity
-                cart.products[productIndex].quantity += 1;
-
-               } else{
-                // if product does not exist, add it to the cart
-                cart.products.push({product:productId,quantity: 1})
-                res.status(200).json({message:"success"})
-               }
-            
-            return cart.save()
+                if (productIndex > -1) {
+                    // If product exists, increment the quantity
+                    cart.products[productIndex].quantity += 1;
+                } else {
+                    // If product does not exist, add it to the cart
+                    cart.products.push({ product: productId, quantity: 1 });
+                }
+                return cart.save();
             }
-           
         })
-        .then(updatedCart =>{
-            // calculate the toatal items
-            const totalItems = updatedCart.products.reduce((total,item)=>total + item.quantity,0);
-            res.json({cartItems: totalItems})
+        .then(updatedCart => {
+            // Calculate the total items
+            const totalItems = updatedCart.products.reduce((total, item) => total + item.quantity, 0);
+            res.json({ cartItems: totalItems });
         })
-        
-        .catch((error) => {
-            console.log("Error adding product to cart:", error);
-            res.status(500).json({ message: "internal server error" });
+        .catch(error => {
+            console.error("Error adding product to cart:", error);
+            res.status(500).json({ message: 'Internal server error' });
         });
-    
-       
-    }else{
-        res.status(404).json({ message: "User not found" });
-        console.log("user not found");
-    }
-   
-})
+});
 
 router.get('/cart',(req,res)=>{
     const userId = req.session.userId;

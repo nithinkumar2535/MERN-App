@@ -14,6 +14,7 @@ function UserHeader(props) {
         axios.get('/api/cart')
         .then((response)=>{
             const products = response.data.products;
+            console.log(products.length);
             setData(products)
 
            // Calculate the total quantity of products in the cart
