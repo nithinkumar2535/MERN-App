@@ -6,7 +6,7 @@ import Header from './component/Header';
 import Body from './component/Body';
 import Footer from './component/Footer';
 import Login from './component/Login';
-import { ToastContainer } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserHeader from './component/Header/UserHeader';
 import UserProducts from './component/User/UserProducts';
@@ -40,7 +40,11 @@ function App() {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position='top-center'
+        autoClose ={100}
+        transition ={Slide}
+      />
 
       {isLoggedIn ? (
         <Routes>

@@ -7,6 +7,9 @@ function UserProducts(props){
 
     const [data,setData] = useState([]);
     const [cartQty, setCartQty] = useState();
+    const [search,setSearch] = useState("")
+    const [searchResults,setSearchResults] = useState([])
+    const [sortOption,setSortOption] = useState("")
 
     const navigate = useNavigate()
 
@@ -30,15 +33,78 @@ function UserProducts(props){
             console.log("error adding to cart");
         })
     }
+
+    const handleSearch =(event)=>{
+        const query = event.target.value;
+        setSearch(query);
+        if(query.length > 0){
+            const results = data.filter(item=>
+                item.itemName.toLowerCase().includes(query.toLowerCase())
+            ).slice(0,5);
+            setSearchResults(results)
+        }else{
+            setSearchResults([]);
+        }
+    }
+
+    const handleSort = (event)=>{
+        setSortOption(event.target.value)
+    }
+    const sortData = (dataToSort)=>{
+        return dataToSort.sort((a,b)=>{
+            if(sortOption === "priceLowToHigh"){
+                return a.discountPrice - b.discountPrice;
+            }else if(sortOption === "priceHighToLow"){
+                return b.discountPrice - a.discountPrice;
+            }else{
+                return 0;
+            }
+        })
+    }
+    const sortedData = sortData([...data]);
+
+    const filterData = sortData(data.filter(item=>
+        item.itemName.toLowerCase().includes(search.toLowerCase())
+    ));
+    const displayData = search ? filterData : sortedData
+    
     
     
 
     return(
             <div className="container-fluid bg-dark-subtle">
             <div className="row ms-5">
-            {data.length > 0 ? (
-                data.map((item,index)=>(
-                    <div key={item._id} className="card ms-5 my-3" style={{ width: '18rem',height:"25rem"}}>
+                <div className="col-3 mt-3 ms-4">
+                    <input
+                        type="search"
+                        className="form-control"
+                        placeholder="Search for products..."
+                        value={search}
+                        onChange={handleSearch}
+                    />
+                    {searchResults.length > 0 && (
+                        <ul className="list-group mt-2">
+                            {searchResults.map(item => (
+                                <li className="list-group-item" key={item._id}>
+                                    {item.itemName}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                
+                <div className="col-3 mt-3">
+                    <select className="form-select" value={sortOption} onChange={handleSort}>
+                        <option value="">Sort by</option>
+                        <option value="priceLowToHigh">Price: Low to High</option>
+                        <option value="priceHighToLow">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+            <div className="row ms-5">
+                {displayData.length > 0 ? (
+                    displayData.map((item,index)=>(
+                        <div key={item._id} className="card ms-5 my-3" style={{ width: '18rem',height:"25rem"}}>
                         <div className="mt-2 d-flex justify-content-center align-items-center" style={{width:"260px",height:"200px"}}>
                             <img src={`http://localhost:3000/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{width:"190px",height:"190px", objectFit:"cover"}} />
                         </div>
@@ -62,7 +128,7 @@ function UserProducts(props){
             ):(
                 <div className="col-md-2 mb-3">
                 <div className="card">
-                        <h1>Product is Empty</h1>
+                        <p>No product available</p>
                     </div>
             </div>
             )}

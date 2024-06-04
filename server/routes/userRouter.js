@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import UserModel from '../models/userModel.js';
+import bcrypt from 'bcryptjs'
 
 router.get('/', (req,res)=>{
     if(req.session.name){
@@ -11,9 +12,16 @@ router.get('/', (req,res)=>{
 })
 
 router.post('/register', (req,res)=>{
-    UserModel.create(req.body)
-        .then(()=>{ res.status(200).json({message:"Success"});
-                            console.log("registerd");})
+   bcrypt.hash(req.body.password,10)
+        .then((hashedPassword)=>{
+            req.body.password = hashedPassword;
+            console.log(hashedPassword)
+            return UserModel.create(req.body);
+        })
+        .then(()=>{
+            res.status(200).json({message: "success"})
+        })
+                            
         .catch((error)=>{
             res.status(404).json({message:"email already exist"});
             console.log("email exist");
@@ -27,15 +35,19 @@ router.post("/login", (req, res) => {
     // Using findOne to fetch single user
     UserModel.findOne({ email: email })
     .then((user) => {
-        if (user) { // Check if user object exists
-            if (user.password === password) {
-                req.session.name = user.name;
-               req.session.userId = user.id
-                req.session.isAdmin = user.admin;
-                res.json({Login: true});
-            } else {
-                res.json("incorrect password");
-            }
+        if (user) { 
+            bcrypt.compare(password,user.password)
+            .then((result)=>{
+                if (result) {
+                    req.session.name = user.name;
+                   req.session.userId = user.id
+                    req.session.isAdmin = user.admin;
+                    res.json({Login: true});
+                } else {
+                    res.json("incorrect password");
+                }
+            })
+            
         } else {
             res.json("invalid email");
         }

@@ -27,7 +27,7 @@ function SignUp() {
     
         axios.post("/api/register", userData)
             .then((response) => {
-                if(response.status ===200 && response.data.message === "Success"){
+                if(response.status ===200 && response.data.message === "success"){
                     toast.success("Registerd successfully");
                     navigate('/login')
                 }else{

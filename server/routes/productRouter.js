@@ -5,6 +5,14 @@ import path from 'path';
 import cartModel from '../models/cartModel.js';
 import UserModel from '../models/userModel.js';
 import session from 'express-session';
+import Razorpay from 'razorpay'
+import dotenv from 'dotenv';
+dotenv.config()
+
+const razorpay = new Razorpay({
+   key_id: process.env.key_id,
+   key_secret: process.env.key_secret 
+})
 
 
 
@@ -257,7 +265,7 @@ router.put('/cart/decrement/:id', (req, res) => {
     const { id } = req.params;
     const { userId } = req.session;
 
-    CartModel.findOne({ user: userId })
+    cartModel.findOne({ user: userId })
         .then(cart => {
             if (!cart) {
                 return res.status(404).json({ success: false, message: 'Cart not found' });
@@ -286,11 +294,9 @@ router.put('/cart/decrement/:id', (req, res) => {
 
 // Delete item from cart
 router.delete('/deletefromcart/:id', (req, res) => {
-    console.log("Triggered deletefromcart route");
+    
     const { id } = req.params;
     const { userId } = req.session;
-    console.log("userId:", userId);
-    console.log("productId:", id); 
     // Find the cart document for the user in the database and pull the product ID from the products array
     cartModel.findOneAndUpdate(
         { user: userId },
@@ -307,5 +313,25 @@ router.delete('/deletefromcart/:id', (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     });
 });
+
+router.post('/create-order',(req,res)=>{
+    const {amount} = req.body;
+
+    const option = {
+        amount: amount * 100,
+        currency: 'INR',
+        receipt: `reciept_${Date.now()}`,
+        payment_capture: 1
+    }
+
+    razorpay.orders.create(option)
+    .then((order)=>{
+        res.json(order)
+        console.log(order);
+    })
+    .catch((error)=>{
+        res.status(500).json(error)
+    })
+})
 
 export default router;

@@ -14,7 +14,6 @@ function UserHeader(props) {
         axios.get('/api/cart')
         .then((response)=>{
             const products = response.data.products;
-            console.log(products.length);
             setData(products)
 
            // Calculate the total quantity of products in the cart
@@ -56,7 +55,7 @@ function UserHeader(props) {
         <>
            
 
-            <header className="p-3 mb-3 border-bottom" style={{backgroundColor:"#272969"}}>
+            <header className="p-3 mb-3 border-bottom"  style={{backgroundColor:"#272969"}}>
                 <div className="container-fluid ">
                     <div className="d-flex flex-wrap align-items-center justify-content-evenly">
                         <div>

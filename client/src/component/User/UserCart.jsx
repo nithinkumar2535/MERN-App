@@ -5,17 +5,32 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { AiOutlineMinus } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Razorpay from 'razorpay'
 
 function UserCart(){
 
     const [data,setData] = useState([]);
     const [totalPrice,setTotalPrice] = useState(0)
+    const [cartQty,setCartQty] = useState();
+    
 
     const navigate = useNavigate();
 
     const calculateTotalPrice = (products)=>{
       return products.reduce((acc,item)=>acc + (item.discountPrice * item.quantity),0)
     }
+
+    function fetchCartData(){
+      axios.get('/api/cart')
+      .then((response)=>{
+        const products = response.data.products;
+        const totalQuantity = products.reduce((total, product) => total + product.quantity, 0);
+        setCartQty(totalQuantity);
+      })
+      .catch((error)=>{
+          console.log("Error fethcing cart data",error);
+      })
+  }
 
     useEffect(()=>{
         axios.get('/api/cart')
@@ -29,7 +44,28 @@ function UserCart(){
         })
         .catch((err)=>{
           console.log("error fetching cart data",err);
+        });
+        fetchCartData()
+        .then(()=>{
+          const intervalId = setInterval(fetchCartData,300);
+       return()=>clearInterval(intervalId);
         })
+        
+       const loadRazorpayScript = ()=>{
+        return new Promise((resolve)=>{
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.async = true;
+          script.onload = resolve;
+          document.body.appendChild(script)
+        });
+       };
+
+       loadRazorpayScript().then(()=>{
+        console.log("Razorpay script loaded");
+       });
+
+
     },[])
 
     
@@ -91,6 +127,47 @@ const handleDecrement = (itemId) => {
             console.error("Error decrementing item quantity:", error);
         });
 };
+
+const handleCheckout = ()=>{
+  axios.post('/api/create-order',{amount:totalPrice})
+  .then(response=>{
+    const {id,amount,currency} = response.data;
+
+    const option = {
+      key: 'rzp_test_MMzw9rPU8pmKnQ',
+      amount:amount,
+      currency: currency,
+      name: 'FreshCart',
+      description: 'Order Payment',
+      order_id: id,
+      handler: (response)=>{
+        axios.post('/api/verify-payment',response)
+        .then(response=>{
+          if(response.data.success){
+            alert('Payment successful');
+            navigate('/order-success');
+          }else{
+            alert('Payment verification failed')
+          }
+        })
+        .catch(error=>{
+          console.error("Payment verification error:",error)
+        })
+        
+      },
+      prefill: {
+        name: 'Customer Name',
+        email: 'customer@example.com';
+        contact: '9999999999'
+      },
+      theme: {
+        color: '#3399cc'
+      }
+    }
+  })
+}
+
+
   
 
     
@@ -109,7 +186,7 @@ const handleDecrement = (itemId) => {
                       <div className="p-5">
                         <div className="d-flex justify-content-between align-items-center mb-5">
                           <h1 className="fw-bold mb-0 text-black">Shopping Cart</h1>
-                          <h6 className="mb-0 "> items</h6>
+                          <h6 className="mb-0 ">{cartQty} items</h6>
                         </div>
                         <hr className="my-4" />
                         {data.length > 0 ? (
@@ -169,7 +246,7 @@ const handleDecrement = (itemId) => {
                         <hr className="my-4" />
 
                         <div className="d-flex justify-content-between mb-4">
-                          <h5 className="text-uppercase">items</h5>
+                          <h5 className="text-uppercase">{cartQty}items</h5>
                           <h5><i className="bi bi-currency-rupee"></i> {totalPrice.toFixed(2)}</h5>
                         </div>
 
@@ -190,7 +267,7 @@ const handleDecrement = (itemId) => {
                           <h5><i className="bi bi-currency-rupee"></i> {totalPrice.toFixed(2)}</h5>
                         </div>
 
-                        <button type="button" className="btn btn-primary btn-block btn-lg">Buy now</button>
+                        <button type="button" className="btn btn-primary btn-block btn-lg" onClick={handleCheckout}>Buy now</button>
                       </div>
                     </div>
                   </div>
