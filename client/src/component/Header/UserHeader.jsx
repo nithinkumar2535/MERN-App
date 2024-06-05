@@ -36,7 +36,7 @@ function UserHeader(props) {
     const navigate = useNavigate();
 
     function handleLogout(){
-        axios.get('/api/logout')
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/logout`)
             .then((result)=>{
                 if(result.data === "logoutsuccess"){
                     navigate('/login')
