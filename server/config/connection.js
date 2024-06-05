@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 
-mongoose.connect("mongodb+srv://dbuser:dbuserpassword@cluster0.biz6pqe.mongodb.net/Reactapp")
+dotenv.config()
+
+mongoose.connect(process.env.MONGO_URL)
     .then((result)=>{
         console.log("connected server")
     })

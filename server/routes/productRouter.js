@@ -316,22 +316,45 @@ router.delete('/deletefromcart/:id', (req, res) => {
 
 router.post('/create-order',(req,res)=>{
     const {amount} = req.body;
+    
 
-    const option = {
+    const options = {
         amount: amount * 100,
         currency: 'INR',
         receipt: `reciept_${Date.now()}`,
         payment_capture: 1
     }
 
-    razorpay.orders.create(option)
+    razorpay.orders.create(options)
     .then((order)=>{
         res.json(order)
-        console.log(order);
+        console.log(order,"fgfgf");
     })
     .catch((error)=>{
         res.status(500).json(error)
+        console.log("error");
     })
+})
+
+router.post('/verify-payment',(req,res)=>{
+    const {razorpay_payment_id, razorpay_order_id} = req.body
+    const shasum = crypto.createHmac('sha256',process.env.key_secret)
+
+    shasum.update(`${razorpay_order_id} || ${razorpay_payment_id}`)
+
+    const digest = shasum.digest('hex')
+
+    if(digest === razorpay_signature){
+        const newOrder = {
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id,
+            amount: "paid",
+            createdAt: new Date()
+        }
+        res.json({success:true, order:newOrder})
+    }else{
+        res.json({success: false})
+    }
 })
 
 export default router;

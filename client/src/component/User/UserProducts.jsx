@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function UserProducts(props){
@@ -120,7 +120,12 @@ function UserProducts(props){
                                 <del className="card-text disabled ms-5 fs-5 ps-1 text-dark-emphasis text-muted"><i className="bi bi-currency-rupee"></i>{item.itemPrice}</del> 
                             </div>
                             <div className="d-flex align-items-center justify-content-center">
-                                <button className="btn btn-primary btn-lg" onClick={()=>{handleCart(item._id)}} >Add to cart</button>
+                            {props.isLoggedIn ? (
+                                <button className="btn btn-primary btn-lg"  onClick={()=>{handleCart(item._id)}} >Add to cart</button>
+                            ):(
+                                 <Link to={'/login'}><button className="btn btn-primary btn-lg">Add to cart</button></Link>
+                            )}
+                                
                             </div>   
                         </div>
                     </div>

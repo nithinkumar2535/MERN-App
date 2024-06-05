@@ -45,11 +45,7 @@ function UserCart(){
         .catch((err)=>{
           console.log("error fetching cart data",err);
         });
-        fetchCartData()
-        .then(()=>{
-          const intervalId = setInterval(fetchCartData,300);
-       return()=>clearInterval(intervalId);
-        })
+        
         
        const loadRazorpayScript = ()=>{
         return new Promise((resolve)=>{
@@ -65,7 +61,9 @@ function UserCart(){
         console.log("Razorpay script loaded");
        });
 
-
+       fetchCartData()
+          const intervalId = setInterval(fetchCartData,300);
+          return()=>clearInterval(intervalId);
     },[])
 
     
@@ -129,11 +127,11 @@ const handleDecrement = (itemId) => {
 };
 
 const handleCheckout = ()=>{
-  axios.post('/api/create-order',{amount:totalPrice})
+  axios.post('/api/create-order',{amount:totalPrice,quantity: data})
   .then(response=>{
     const {id,amount,currency} = response.data;
 
-    const option = {
+    const options = {
       key: 'rzp_test_MMzw9rPU8pmKnQ',
       amount:amount,
       currency: currency,
@@ -157,13 +155,18 @@ const handleCheckout = ()=>{
       },
       prefill: {
         name: 'Customer Name',
-        email: 'customer@example.com';
+        email: 'customer@example.com',
         contact: '9999999999'
       },
       theme: {
         color: '#3399cc'
       }
-    }
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  })
+  .catch(error=>{
+    console.error('Error creating Razorpay order',error)
   })
 }
 
