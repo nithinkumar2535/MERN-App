@@ -23,7 +23,7 @@ function AdminAddProducts() {
         formData.append('itemCategory',itemCategory);
         formData.append('discountPrice',discountPrice)
     
-        axios.post("/api/admin/products", formData, {
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/api/admin/products`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

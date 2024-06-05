@@ -16,14 +16,14 @@ function AdminEditProducts() {
     const [previewImage, setPreviewImage] = useState(""); // State for image preview URL
 
     useEffect(() => {
-        axios.get(`/api/editproducts/${id}`)
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/editproducts/${id}`)
             .then((result) => {
                 setItemName(result.data.itemName);
                 setItemDesc(result.data.itemDesc);
                 setItemPrice(result.data.itemPrice);
                 setDiscountPrice(result.data.discountPrice);
                 setItemWeight(result.data.itemWeight)
-                setPreviewImage(`http://localhost:3000/images/product-images/${id}.jpg?timestamp=${new Date().getTime()}`); // Set initial image preview
+                setPreviewImage(`${import.meta.env.VITE_SERVER_URL}/images/product-images/${id}.jpg?timestamp=${new Date().getTime()}`); // Set initial image preview
             })
             .catch((err) => {
                 console.log(err);
@@ -54,7 +54,7 @@ function AdminEditProducts() {
             formData.append('itemImage', itemImage);
         }
 
-        axios.post(`/api/editproducts/${id}`, formData, {
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/api/editproducts/${id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

@@ -11,7 +11,7 @@ function SignUp() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get('/api/', { withCredentials: true })
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/`, { withCredentials: true })
             .then((result) => {
                 if(result.data.Valid){
                     navigate('/')
@@ -28,7 +28,7 @@ function SignUp() {
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) =>{
         e.preventDefault()
-        axios.post("/api/login", {email, password})
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/api/login`, {email, password})
             .then((result)=>{
                 if(result.data.Login){
                     navigate('/')
@@ -55,7 +55,7 @@ function SignUp() {
                             <div className="card" style={{ borderRadius: "1rem" }}>
                                 <div className="row g-0">
                                     <div className="col-md-6 col-lg-5 d-none d-md-block">
-                                        <img src={`http://localhost:3000/images/other-images/login-image.jpg`} alt="login form" className="img-fluid" style={{ borderRadius: "1rem 0 0 1rem" }} />
+                                        <img src={`${import.meta.env.VITE_SERVER_URL}/images/other-images/login-image.jpg`} alt="login form" className="img-fluid" style={{ borderRadius: "1rem 0 0 1rem" }} />
                                     </div>
                                     <div className="col-md-6 col-lg-7 d-flex align-items-center">
                                         <div className="card-body p-4 p-lg-5 text-black">
@@ -63,7 +63,7 @@ function SignUp() {
                                             <form onSubmit={handleSubmit}>
 
                                                 <div className="d-flex align-items-center mb-3 pb-1 justify-content-center">
-                                                <img src={`http://localhost:3000/images/other-images/freshcart-high-resolution-logo-transparent.png`} alt="login form" className='img-fluid' style={{maxWidth:"150px"}}/>
+                                                <img src={`${import.meta.env.VITE_SERVER_URL}/images/other-images/freshcart-high-resolution-logo-transparent.png`} alt="login form" className='img-fluid' style={{maxWidth:"150px"}}/>
                                                 </div>
 
                                                 <h5 className="fw-normal mb-3 pb-3" style={{ letterSpacing: "1px" }}>Sign into your account</h5>

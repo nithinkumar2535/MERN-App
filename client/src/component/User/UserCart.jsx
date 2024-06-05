@@ -21,7 +21,7 @@ function UserCart(){
     }
 
     function fetchCartData(){
-      axios.get('/api/cart')
+      axios.get(`${import.meta.env.VITE_SERVER_URL}/api/cart`)
       .then((response)=>{
         const products = response.data.products;
         const totalQuantity = products.reduce((total, product) => total + product.quantity, 0);
@@ -33,7 +33,7 @@ function UserCart(){
   }
 
     useEffect(()=>{
-        axios.get('/api/cart')
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/cart`)
         .then((response)=>{
          const products = response.data.products
          setData(products)
@@ -70,7 +70,7 @@ function UserCart(){
     
 
     const handleDelete = (itemId) => {
-      axios.delete(`/api/deletefromcart/${itemId}`)
+      axios.delete(`${import.meta.env.VITE_SERVER_URL}/api/deletefromcart/${itemId}`)
           .then((response) => {
               const newData = data.filter(item => item._id !== itemId);
               setData(newData);
@@ -82,7 +82,7 @@ function UserCart(){
   };
 
   const handleIncrement = (itemId) => {
-    axios.put(`/api/cart/increment/${itemId}`)
+    axios.put(`${import.meta.env.VITE_SERVER_URL}/api/cart/increment/${itemId}`)
         .then((response) => {
             if (response.data.success) {
                 const newData = data.map(item => {
@@ -105,7 +105,7 @@ function UserCart(){
 
 
 const handleDecrement = (itemId) => {
-    axios.put(`/api/cart/decrement/${itemId}`)
+    axios.put(`${import.meta.env.VITE_SERVER_URL}/api/cart/decrement/${itemId}`)
         .then((response) => {
             if (response.data.success) {
                 const newData = data.map(item => {
@@ -127,7 +127,7 @@ const handleDecrement = (itemId) => {
 };
 
 const handleCheckout = ()=>{
-  axios.post('/api/create-order',{amount:totalPrice,quantity: data})
+  axios.post(`${import.meta.env.VITE_SERVER_URL}/api/create-order`,{amount:totalPrice,quantity: data})
   .then(response=>{
     const {id,amount,currency} = response.data;
 
@@ -139,7 +139,7 @@ const handleCheckout = ()=>{
       description: 'Order Payment',
       order_id: id,
       handler: (response)=>{
-        axios.post('/api/verify-payment',response)
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/api/verify-payment`,response)
         .then(response=>{
           if(response.data.success){
             alert('Payment successful');
@@ -197,7 +197,7 @@ const handleCheckout = ()=>{
                                 <div key={item._id} className="row mb-1 d-flex justify-content-between align-items-center">
         
                                   <div className="col-md-2 col-lg-2 col-xl-2">
-                                    <img src={`http://localhost:3000/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="img-fluid rounded-3" alt="Cotton T-shirt" 
+                                    <img src={`${import.meta.env.VITE_SERVER_URL}/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="img-fluid rounded-3" alt="Cotton T-shirt" 
                                     style={{ maxWidth: "100px", height: "80px", objectFit: "cover" }}/>
                                   </div>
         

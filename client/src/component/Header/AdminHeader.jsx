@@ -7,7 +7,7 @@ function AdminHeader(props) {
     const navigate = useNavigate()
 
     function handleLogout() {
-        axios.get('/api/logout')
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/logout`)
             .then((result) => {
                 if (result.data === "logoutsuccess") {
                     navigate('/login')
@@ -25,7 +25,7 @@ function AdminHeader(props) {
                 <div className="container-fluid ">
                     <div className="d-flex flex-wrap align-items-center justify-content-evenly">
                         <div>
-                            <Link to={"/"} ><img src={`http://localhost:3000/images/other-images/freshcart-high-resolution-logo-white-transparent.png`} alt="login form"
+                            <Link to={"/"} ><img src={`${import.meta.env.VITE_SERVER_URL}/images/other-images/freshcart-high-resolution-logo-white-transparent.png`} alt="login form"
                                 className='img-fluid' style={{ maxWidth: "70px" }} /> </Link>
                         </div>
                         <div className="d-none d-md-flex d-lg-flex d-xl-flex d-xxl-flex" >

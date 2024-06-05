@@ -14,7 +14,7 @@ function UserProducts(props){
     const navigate = useNavigate()
 
     useEffect(()=>{
-        axios.get('/api/products')
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/products`)
         .then((response)=>{
             setData(response.data)
         })
@@ -24,7 +24,7 @@ function UserProducts(props){
     },[])
 
     const handleCart = (itemId)=>{
-        axios.get(`/api/getcart/${itemId}`)
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/getcart/${itemId}`)
         .then((response)=>{
             setCartQty(response.data.cartItems);
             toast.success("product added to cart")
@@ -106,7 +106,7 @@ function UserProducts(props){
                     displayData.map((item,index)=>(
                         <div key={item._id} className="card ms-5 my-3" style={{ width: '18rem',height:"25rem"}}>
                         <div className="mt-2 d-flex justify-content-center align-items-center" style={{width:"260px",height:"200px"}}>
-                            <img src={`http://localhost:3000/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{width:"190px",height:"190px", objectFit:"cover"}} />
+                            <img src={`${import.meta.env.VITE_SERVER_URL}/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{width:"190px",height:"190px", objectFit:"cover"}} />
                         </div>
                         
                         <div  className="card-body">

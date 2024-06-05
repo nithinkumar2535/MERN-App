@@ -7,7 +7,7 @@ function AdminProducts() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("/api/admin/viewproducts")
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/admin/viewproducts`)
             .then((response) => {
                 setData(response.data);
             })
@@ -15,7 +15,7 @@ function AdminProducts() {
     }, []);
 
     const handleDelete = (itemId) => {
-        axios.delete(`/api/deleteproduct/${itemId}`)
+        axios.delete(`${import.meta.env.VITE_SERVER_URL}/api/deleteproduct/${itemId}`)
             .then((response) => {
                 // Filter out the deleted item from the data array
                 const newData = data.filter(item => item._id !== itemId);
@@ -47,7 +47,7 @@ function AdminProducts() {
                                 <td>{item.itemName}</td>
                                 <td>{item.itemDesc}</td>
                                 <td>{item.itemPrice}</td>
-                                <td><img src={`http://localhost:3000/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} style={{ maxWidth: "50px" }} alt={item.itemName} /></td>
+                                <td><img src={`${import.meta.env.VITE_SERVER_URL}/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} style={{ maxWidth: "50px" }} alt={item.itemName} /></td>
                                 <td>
                                     <Link to={`/editproducts/${item._id}`} className="btn btn-outline-primary me-2">Edit</Link>
                                     <button onClick={() => handleDelete(item._id)} className="btn btn-outline-danger">Delete</button>

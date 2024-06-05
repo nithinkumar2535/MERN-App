@@ -25,7 +25,7 @@ function SignUp() {
             password
         };
     
-        axios.post("/api/register", userData)
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/api/register`, userData)
             .then((response) => {
                 if(response.status ===200 && response.data.message === "success"){
                     toast.success("Registerd successfully");
@@ -106,7 +106,7 @@ function SignUp() {
                                     </div>
                                     <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
 
-                                    <img src={`http://localhost:3000/images/other-images/freshcart-high-resolution-logo-transparent.png`} alt="login form"
+                                    <img src={`${import.meta.env.VITE_SERVER_URL}/images/other-images/freshcart-high-resolution-logo-transparent.png`} alt="login form"
                                        className='img-fluid'/>
 
                                     </div>
