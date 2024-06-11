@@ -17,7 +17,8 @@ const port = 3000;
 app.use(cors({
     origin: ['https://mern-app-nine-tan.vercel.app'],
     methods: ["POST", "GET"],
-    credentials: true
+    credentials: true,
+    allowedHeaders:['Content-Type']
 }));
 app.use(fileUpload())
 app.use(bodyParser.json())
