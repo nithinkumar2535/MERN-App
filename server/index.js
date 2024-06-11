@@ -15,7 +15,7 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-    origin: ['https://mern-app-nine-tan.vercel.app'],
+    origin: ['https://fresh-cart-phi-sand.vercel.app/'],
     methods: ["POST", "GET"],
     credentials: true,
     allowedHeaders:['Content-Type']
