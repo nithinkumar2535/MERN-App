@@ -16,7 +16,7 @@ const port = 3000;
 
 app.use(cors({
     origin: ['https://fresh-cart-phi-sand.vercel.app/'],
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET","PUT","DELETE"],
     credentials: true,
     allowedHeaders:['Content-Type']
 }));
