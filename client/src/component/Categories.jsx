@@ -7,7 +7,7 @@ function Categories(){
     const [category,setCategory] = useState([]);
 
     useEffect(()=>{
-        axios.get('/api/products')
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/api/products`)
         .then((response)=>{
             setCategory(response.data)
         })
