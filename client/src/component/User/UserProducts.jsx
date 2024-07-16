@@ -102,8 +102,8 @@ function UserProducts(props){
                 </div>
             </div>
             <div className="row ms-5">
-                {displayData.length > 0 ? (
-                    displayData.map((item,index)=>(
+                {data.length > 0 ? (
+                    data.map((item,index)=>(
                         <div key={item._id} className="card ms-5 my-3" style={{ width: '18rem',height:"25rem"}}>
                         <div className="mt-2 d-flex justify-content-center align-items-center" style={{width:"260px",height:"200px"}}>
                             <img src={`${import.meta.env.VITE_SERVER_URL}/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{width:"190px",height:"190px", objectFit:"cover"}} />
