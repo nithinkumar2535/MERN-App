@@ -3,7 +3,7 @@ import React from 'react';
 const Carousel = () => {
   return (
     <div id="carouselExample" className="carousel slide" data-ride="carousel">
-      <div className="carousel-inner" style={{maxHeight:"400px"}}>
+      <div className="carousel-inner" style={{maxHeight:"300px"}}>
         <div className="carousel-item active">
         <img src={`${import.meta.env.VITE_SERVER_URL}/images/other-images/slider1.png`} alt="login form" className="img-fluid" style={{objectFit:"cover"}}/>
         </div>

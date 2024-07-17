@@ -46,7 +46,7 @@ function AdminProducts() {
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.itemName}</td>
                                 <td>{item.itemDesc}</td>
-                                <td>{item.itemPrice}</td>
+                                <td>{item.discountPrice}</td>
                                 <td><img src={`${import.meta.env.VITE_SERVER_URL}/images/product-images/${item._id}.jpg?timestamp=${new Date().getTime()}`} style={{ maxWidth: "50px" }} alt={item.itemName} /></td>
                                 <td>
                                     <Link to={`/editproducts/${item._id}`} className="btn btn-outline-primary me-2">Edit</Link>

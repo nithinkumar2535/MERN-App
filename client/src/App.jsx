@@ -8,11 +8,7 @@ import Footer from './component/Footer';
 import Login from './component/Login';
 import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserHeader from './component/Header/UserHeader';
-import UserProducts from './component/User/UserProducts';
-import Carousel from './component/Carousel';
-import Categories from './component/Categories';
-import DealOfTheDay from './component/DealOfTheDay';
+import './App.css'
 
 
 function App() {
@@ -64,12 +60,11 @@ function App() {
           <Route path='/register' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
           <Route path='/cart' element={<Login />} />
-          <Route path='/' element={
+          <Route  path='/*' element={
             <div>
-              <UserHeader />
-              <Carousel />
-              <UserProducts />
-              <Footer />
+               <Header name={name} isAdmin={isAdmin} isLoggedIn={isLoggedIn} />
+              <Body name={name} isAdmin={isAdmin} isLoggedIn={isLoggedIn} />
+              <Footer name={name} isAdmin={isAdmin} isLoggedIn={isLoggedIn} />
             </div>
           } />
         </Routes>

@@ -21,10 +21,10 @@ function Body(props) {
                 <Route path='/addproducts' element={<AdminAddProducts />} />
                 <Route path='/editproducts/:id' element={<AdminEditProducts />} />
             </Routes>):(<Routes>
-                <Route path='/' element={
+                <Route path='/*' element={
                 <div>
                     <Carousel/>
-                    <UserProducts />
+                    <UserProducts isLoggedin={props.isLoggedin}/>
                 </div>
                 } />
                 <Route path='/cart' element={<UserCart />} />

@@ -49,13 +49,15 @@ function UserHeader(props) {
             .catch((error)=>{
                 console.log(error);
             })
-        }
+    }
+
+       
             
     return (
         <>
            
 
-            <header className="p-3 mb-3 border-bottom"  style={{backgroundColor:"#272969"}}>
+            <header className="p-3 border-bottom"  style={{backgroundColor:"#272969"}}>
                 <div className="container-fluid ">
                     <div className="d-flex flex-wrap align-items-center justify-content-evenly">
                         <div>

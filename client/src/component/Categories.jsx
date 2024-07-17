@@ -9,7 +9,7 @@ function Categories(){
     useEffect(()=>{
         axios.get('/api/products')
         .then((response)=>{
-            setProduct(response.data)
+            setCategory(response.data)
         })
     },[])
 
@@ -21,7 +21,7 @@ function Categories(){
             <div className="container">
             <h1>Categories</h1>
             <div className="row m-4">
-            { itemCategory.map((category,index)=>(
+            { category.map((product,index)=>(
                 <div key={index} className="card m-4" style={{ width: '18rem' }}>
                     <img src={`http://localhost:3000/images/product-images/${product._id}.jpg?timestamp=${new Date().getTime()}`} className="card-img-top" alt="..." style={{maxWidth:"200px",height:"200px",objectFit:"cover"}}/>
                     <div  className="card-body">
