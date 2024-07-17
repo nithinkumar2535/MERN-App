@@ -15,10 +15,8 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-    origin: ['https://fresh-cart-phi-sand.vercel.app/'],
-    methods: ["POST", "GET","PUT","DELETE"],
+    origin: http://localhost:3000,
     credentials: true,
-    allowedHeaders:['Content-Type']
 }));
 app.use(fileUpload())
 app.use(bodyParser.json())
