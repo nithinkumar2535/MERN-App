@@ -15,11 +15,11 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://freshcart-sage.vercel.app',
     credentials: true,
 }));
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.setHeader('Access-Control-Allow-Origin', 'https://freshcart-sage.vercel.app');
   next();
 });
 app.use(fileUpload())
